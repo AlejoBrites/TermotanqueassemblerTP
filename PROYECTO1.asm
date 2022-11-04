@@ -1,9 +1,12 @@
 ;********************************************************************
-;Alumnno: Alejo Brites |DNI:44182530 |Fecha de entrega:11/11/2022   * 
+;Alumnno: Alejo Brites               DNI:44182530                   * 
+; Fecha de entrega:11/11/2022                                       *
 ;Profesor: Roberto Garcia          PIC16F628A                       *
 ;El programa simulara la temperatura del agua de un termotanque     *
-;donde la minima es de 35°C y la maxima de 70°C
-;
+;donde la minima es de 35°C y la maxima de 70°C, este termotanque   *
+;tendre 4 ldes que indicaran que: La resistencia esta apagada,LA 2da*
+;que indicara que el agua se esta calentando, la 3ra que el agua    *
+;llego a la maxima y la 4ta que el agua desencio a la minima        *
 ;********************************************************************
 
 ;********************************************************************
@@ -25,8 +28,8 @@ TEMPACT EQU 0x22    ;Reservamos memoria para temperatura ambiente
 CANILLA EQU 0x23    ;Reservamos memoria para  la canilla
 ACUMULADOR1 EQU 0x24  ;Reservamos memoria para  contador1
 ACUMULADOR2 EQU 0x25  ;Reservamos memoria para  contador2
-ACUMULADOR3 EQU 0x26
-ACUMULADOR4 EQU 0x27
+ACUMULADOR3 EQU 0x26  ;...
+ACUMULADOR4 EQU 0x27  ;...
 ;********************************************************************
 
 		ORG 0x00
@@ -37,27 +40,31 @@ ACUMULADOR4 EQU 0x27
 
 INICIO
 
-		call CONFIGURAR_PUERTOS
+		call CONFIGURAR_PUERTOS   ;configuramos los puertos con sus valores iniciales
 
 		movlw d'30'
-		movwf TEMPMIN  ;le damos el valor a la temperatura minima
+		movwf TEMPMIN  ;le damos el valor a la temperatura minima con los mov
 		movlw d'70'
-		movwf TEMPMAX  ;le damos el valor a la temperatura maxima
+		movwf TEMPMAX  ;le damos el valor a la temperatura maxima con los mov
 		movlw d'20'
-		movwf TEMPACT  ;le damos el valor a la temperatura actual
-        COMF CANILLA,F   ;dejamos la canilla en 0, es decir "cerrada"
-        ;podemos cambiar el "CLRF" POR "COMF" para abrir la canilla Y QUE VAYYA VARIANDO
+		movwf TEMPACT  ;le damos el valor a la temperatura actual con los mov
+        COMF CANILLA,F   ;podemos con CLRF dejamos la canilla en 0, es decir "cerrada"
+        ;podemos cambiar el "CLRF" POR "COMF" para abrir la canilla Y QUE VAYA VARIANDO
 		clrw    ;Dejo en 0 el registro w ( por las dudas ) 
 
-		CALL CALIENTOELAGUA
+		CALL CALIENTOELAGUA  ;LLAMO a la subrutina para empezar el procedimiento de calentar agua 
 		
+		CALL RETARDO_DE1S     ;llamo a 4 retardos de 1seg, para generar
+		CALL RETARDO_DE1S     ;un retanro de 4 segundo entre los calls
 		CALL RETARDO_DE1S
 		CALL RETARDO_DE1S
 		CALL RETARDO_DE1S
-		CALL RETARDO_DE1S
-		CALL RETARDO_DE1S
-
-		CALL DISMINUIR_TEMP
+		
+		;¡¡¡COMENTARIOIMPORTANTE !!!
+        ;SI LA TEMPERATURA ACTUAL>TEMPERATURA MAXIMA la luz roja se prendera sin hacer la subrutina
+		;de CALIENTOELAGUA y pasara a disminuirse
+		
+		CALL DISMINUIR_TEMP   ; Empezamos el proceso de decrecimiento hasta la temperatura minima
 
 		goto INICIO
 
@@ -78,7 +85,7 @@ CALIENTOELAGUA             ;Aca trabajaremos con el calentamiento del agua
         CALL LED_AZUL      ;LLamamos a la luz led de resistencia apagada
 		movf TEMPACT,W
 		subwf TEMPMAX,W
-		btfss STATUS,C    ;verfico si la tempact>tempmax 
+		btfsc STATUS,C    ;verfico si la tempact>tempmax 
 		CALL INCREMENTAR_TEMP ;en caso de ser tempact<tempmax llamo a la subrutina
 		
 		CALL LED_ROJO		
@@ -95,7 +102,7 @@ INCREMENTAR_TEMP
 		subwf TEMPMAX,W   ; para luego restarlo "tempmax - w(tempact)"
 
 		btfss STATUS,Z        ;verifico si la temperatura actual llego a la maxima 
-		goto INCREMENTAR_TEMP	;sino volvemos a hacer el procedimiento
+		goto INCREMENTAR_TEMP	;sino volvemos a hacer el procedimiento para seguir incrementando
 
 		RETURN
 
@@ -105,7 +112,7 @@ DISMINUIR_TEMP          ;Aca trabajaremos con el enfriamiento del agua
 
 	   movf TEMPMIN,W   ; nos fijamos que tempact>tempmin 
 	   subwf TEMPACT,W ;con la resta TEMPACT-TEMPMIN
-	   btfss STATUS,C  ;verificamos que tempact>tempmin
+	   btfsc STATUS,C  ;verificamos que tempact>tempmin
 	   CALL DISMINUIR_TEMP1	;sino llamamos a esta subrutina	
 
 	   CALL LED_VERDE	
@@ -117,10 +124,10 @@ DISMINUIR_TEMP1
 
        decf TEMPACT,F     
 
-	   btfsc CANILLA,0
-	   CALL DISMINUIR_POR_CARNILLA
+	   btfsc CANILLA,0     ;Si la canilla esta abierta llamara a
+	   CALL DISMINUIR_POR_CARNILLA  ; esta funcion, sino la saltara
 
-	   movf TEMPACT,W     
+	   movf TEMPACT,W     ;movemos al w, la tempact
 	   subwf TEMPMIN,W    ; restamos la tempact con la tempmin
 	   btfss STATUS,Z
 	   goto DISMINUIR_TEMP1	 ;Sino llego a la temperatura minima, que siga		
@@ -143,6 +150,8 @@ LED_AZUL                 ;Luz de resistencia apaada
 		bcf STATUS,RP0
 		bsf PORTB,0              ;seteamos en 1 el bit, prendiendo el mismo
         call RETARDO_DE250MS
+		call RETARDO_DE250MS
+		call RETARDO_DE250MS
 		bcf PORTB,0
 
 		RETURN
@@ -152,6 +161,7 @@ LED_AMARILLO            ;Luz led del proceso del calentamiento del agua
 		bcf STATUS,RP0
 		bsf PORTB,1              ;seteamos en 1 el bit, prendiendo el mismo
         call RETARDO_DE250MS
+		call RETARDO_DE250MS
 		
 		bcf PORTB,1
 
@@ -161,7 +171,7 @@ LED_ROJO            ;Luz led que indica que el agua llego a la maxima
 
 		bcf STATUS,RP0
 		bsf PORTB,2               ;seteamos en 1 el bit, prendiendo el mismo
-        call RETARDO_DE250MS       ;retardo
+        CALL RETARDO_DE1S       ;retardo
 		bcf PORTB,2
 
 		RETURN
@@ -171,6 +181,8 @@ LED_VERDE
 		bcf STATUS,RP0
 		bsf PORTB,3               ;seteamos en 1 el bit, prendiendo el mismo
         call RETARDO_DE250MS       ;retardo
+		call RETARDO_DE250MS 
+		call RETARDO_DE250MS 
 		bcf PORTB,3
 
 		RETURN

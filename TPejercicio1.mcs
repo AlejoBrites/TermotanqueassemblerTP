@@ -2,7 +2,7 @@
 MagicCookie={0b13fe8c-dfe0-40eb-8900-6712719559a7}
 Version=1.0
 [File000]
-Location=C:\Users\alejo\Desktop\Universidad\arq.computadoras\MPLAB progama\TrabajoPractico\proyecto1.o
+Location=C:\Users\alejo\Desktop\Universidad\arq.computadoras\MPLAB progama\TrabajoPractico\Ejercicio1\proyecto1.o
 Folder=Intermediary
 DeviceName=PIC16F628A
 LanguageToolSuiteID={6B3DAA78-59C1-46DD-B6AA-DBDAE4E06484}
@@ -15,7 +15,7 @@ ToolArgsString=/c-
 TraceCmdString=
 DebugOptions=/d__DEBUG=1
 [File001]
-Location=C:\Users\alejo\Desktop\Universidad\arq.computadoras\MPLAB progama\TrabajoPractico\proyecto1.err
+Location=C:\Users\alejo\Desktop\Universidad\arq.computadoras\MPLAB progama\TrabajoPractico\Ejercicio1\proyecto1.err
 Folder=Intermediary
 DeviceName=PIC16F628A
 LanguageToolSuiteID={6B3DAA78-59C1-46DD-B6AA-DBDAE4E06484}
@@ -28,7 +28,7 @@ ToolArgsString=/c-
 TraceCmdString=
 DebugOptions=/d__DEBUG=1
 [File002]
-Location=C:\Users\alejo\Desktop\Universidad\arq.computadoras\MPLAB progama\TrabajoPractico\proyecto1.lst
+Location=C:\Users\alejo\Desktop\Universidad\arq.computadoras\MPLAB progama\TrabajoPractico\Ejercicio1\proyecto1.lst
 Folder=Output
 DeviceName=PIC16F628A
 LanguageToolSuiteID={6B3DAA78-59C1-46DD-B6AA-DBDAE4E06484}
@@ -41,7 +41,7 @@ ToolArgsString=/c-
 TraceCmdString=
 DebugOptions=/d__DEBUG=1
 [File003]
-Location=C:\Users\alejo\Desktop\Universidad\arq.computadoras\MPLAB progama\TrabajoPractico\TPejercicio1.cof
+Location=C:\Users\alejo\Desktop\Universidad\arq.computadoras\MPLAB progama\TrabajoPractico\Ejercicio1\TPejercicio1.cof
 Folder=Output
 DeviceName=PIC16F628A
 LanguageToolSuiteID={6B3DAA78-59C1-46DD-B6AA-DBDAE4E06484}
@@ -54,7 +54,7 @@ ToolArgsString=/m"$(BINDIR_)$(TARGETBASE).map" /w /o"$(BINDIR_)$(TARGETBASE).cof
 TraceCmdString=
 DebugOptions=/z__MPLAB_DEBUG=1
 [File004]
-Location=C:\Users\alejo\Desktop\Universidad\arq.computadoras\MPLAB progama\TrabajoPractico\TPejercicio1.hex
+Location=C:\Users\alejo\Desktop\Universidad\arq.computadoras\MPLAB progama\TrabajoPractico\Ejercicio1\TPejercicio1.hex
 Folder=Output
 DeviceName=PIC16F628A
 LanguageToolSuiteID={6B3DAA78-59C1-46DD-B6AA-DBDAE4E06484}
@@ -67,7 +67,7 @@ ToolArgsString=/m"$(BINDIR_)$(TARGETBASE).map" /w /o"$(BINDIR_)$(TARGETBASE).cof
 TraceCmdString=
 DebugOptions=/z__MPLAB_DEBUG=1
 [File005]
-Location=C:\Users\alejo\Desktop\Universidad\arq.computadoras\MPLAB progama\TrabajoPractico\TPejercicio1.map
+Location=C:\Users\alejo\Desktop\Universidad\arq.computadoras\MPLAB progama\TrabajoPractico\Ejercicio1\TPejercicio1.map
 Folder=Output
 DeviceName=PIC16F628A
 LanguageToolSuiteID={6B3DAA78-59C1-46DD-B6AA-DBDAE4E06484}

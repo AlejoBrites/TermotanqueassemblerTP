@@ -1,24 +1,27 @@
-MPASM  5.50                     PROYECTO1.ASM   11-3-2022  22:19:30         PAGE  1
+MPASM  5.50                     PROYECTO1.ASM   11-4-2022  16:49:19         PAGE  1
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
                       00001 ;********************************************************************
-                      00002 ;Alumnno: Alejo Brites |DNI:44182530 |Fecha de entrega:11/11/2022   * 
-                      00003 ;Profesor: Roberto Garcia          PIC16F628A                       *
-                      00004 ;El programa simulara la temperatura del agua de un termotanque     *
-                      00005 ;donde la minima es de 35°C y la maxima de 70°C
-                      00006 ;
-                      00007 ;********************************************************************
-                      00008 
-                      00009 ;********************************************************************
-                      00010 ;                         DATOS                                     *
-                      00011 ;********************************************************************
-                      00012 
-2007   3F10           00013         __CONFIG 3F10
-                      00014         LIST P=16F628A
-                      00015     INCLUDE <P16F628A.INC>
+                      00002 ;Alumnno: Alejo Brites               DNI:44182530                   * 
+                      00003 ; Fecha de entrega:11/11/2022                                       *
+                      00004 ;Profesor: Roberto Garcia          PIC16F628A                       *
+                      00005 ;El programa simulara la temperatura del agua de un termotanque     *
+                      00006 ;donde la minima es de 35°C y la maxima de 70°C, este termotanque   *
+                      00007 ;tendre 4 ldes que indicaran que: La resistencia esta apagada,LA 2da*
+                      00008 ;que indicara que el agua se esta calentando, la 3ra que el agua    *
+                      00009 ;llego a la maxima y la 4ta que el agua desencio a la minima        *
+                      00010 ;********************************************************************
+                      00011 
+                      00012 ;********************************************************************
+                      00013 ;                         DATOS                                     *
+                      00014 ;********************************************************************
+                      00015 
+2007   3F10           00016         __CONFIG 3F10
+                      00017         LIST P=16F628A
+                      00018     INCLUDE <P16F628A.INC>
                       00001         LIST
                       00002 
                       00003 ;==========================================================================
@@ -28,234 +31,246 @@ LOC  OBJECT CODE     LINE SOURCE TEXT
                       00007 ;==========================================================================
                       00008 
                       00385         LIST
-                      00016         ERRORLEVEL -302
-                      00017 
-                      00018 ;********************************************************************
-                      00019 ;                          DEFINICIONES                             *
-                      00020 ;********************************************************************
-                      00021 
-  00000020            00022 TEMPMAX EQU 0X20    ;Reservamos memoria para temperatura maxima
-  00000021            00023 TEMPMIN EQU 0X21    ;Reservamos memoria para temperatura minima
-  00000022            00024 TEMPACT EQU 0X22    ;Reservamos memoria para temperatura ambiente
-  00000023            00025 CANILLA EQU 0X23    ;Reservamos memoria para  la canilla
-  00000024            00026 ACUMULADOR1 EQU 0X24  ;Reservamos memoria para  contador1
-  00000025            00027 ACUMULADOR2 EQU 0X25  ;Reservamos memoria para  contador2
-  00000026            00028 ACUMULADOR3 EQU 0X26
-  00000027            00029 ACUMULADOR4 EQU 0X27
-                      00030 ;********************************************************************
-                      00031 
-                      00032                 ORG 0X00
-                      00033 
-                      00034 ;********************************************************************
-                      00035 ;              INICIO DEL PROGRAMA                                  *
-                      00036 ;********************************************************************
-                      00037 
-0000                  00038 INICIO
-                      00039 
-0000   2???           00040                 CALL CONFIGURAR_PUERTOS
-                      00041 
-0001   301E           00042                 MOVLW D'30'
-0002   00A1           00043                 MOVWF TEMPMIN  ;le damos el valor a la temperatura minima
-0003   3046           00044                 MOVLW D'70'
-MPASM  5.50                     PROYECTO1.ASM   11-3-2022  22:19:30         PAGE  2
+                      00019         ERRORLEVEL -302
+                      00020 
+                      00021 ;********************************************************************
+                      00022 ;                          DEFINICIONES                             *
+                      00023 ;********************************************************************
+                      00024 
+  00000020            00025 TEMPMAX EQU 0X20    ;Reservamos memoria para temperatura maxima
+  00000021            00026 TEMPMIN EQU 0X21    ;Reservamos memoria para temperatura minima
+  00000022            00027 TEMPACT EQU 0X22    ;Reservamos memoria para temperatura ambiente
+  00000023            00028 CANILLA EQU 0X23    ;Reservamos memoria para  la canilla
+  00000024            00029 ACUMULADOR1 EQU 0X24  ;Reservamos memoria para  contador1
+  00000025            00030 ACUMULADOR2 EQU 0X25  ;Reservamos memoria para  contador2
+  00000026            00031 ACUMULADOR3 EQU 0X26  ;...
+  00000027            00032 ACUMULADOR4 EQU 0X27  ;...
+                      00033 ;********************************************************************
+                      00034 
+                      00035                 ORG 0X00
+                      00036 
+                      00037 ;********************************************************************
+                      00038 ;              INICIO DEL PROGRAMA                                  *
+                      00039 ;********************************************************************
+                      00040 
+0000                  00041 INICIO
+                      00042 
+0000   2???           00043                 CALL CONFIGURAR_PUERTOS   ;configuramos los puertos con sus valores iniciales
+                      00044 
+MPASM  5.50                     PROYECTO1.ASM   11-4-2022  16:49:19         PAGE  2
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-0004   00A0           00045                 MOVWF TEMPMAX  ;le damos el valor a la temperatura maxima
-0005   3014           00046                 MOVLW D'20'
-0006   00A2           00047                 MOVWF TEMPACT  ;le damos el valor a la temperatura actual
-0007   09A3           00048         COMF CANILLA,F   ;dejamos la canilla en 0, es decir "cerrada"
-                      00049         ;podemos cambiar el "CLRF" POR "COMF" para abrir la canilla Y QUE VAYYA VARIANDO
-0008   0103           00050                 CLRW    ;Dejo en 0 el registro w ( por las dudas ) 
-                      00051 
-0009   2???           00052                 CALL CALIENTOELAGUA
-                      00053                 
-000A   2???           00054                 CALL RETARDO_DE1S
-000B   2???           00055                 CALL RETARDO_DE1S
-000C   2???           00056                 CALL RETARDO_DE1S
-000D   2???           00057                 CALL RETARDO_DE1S
-000E   2???           00058                 CALL RETARDO_DE1S
-                      00059 
-000F   2???           00060                 CALL DISMINUIR_TEMP
-                      00061 
-0010   2???           00062                 GOTO INICIO
-                      00063 
-                      00064 ;********************************************************************
-0011                  00065 CONFIGURAR_PUERTOS         ;Aca configuraremos con el trisb el portb
-                      00066 
-0011   1683           00067                 BSF STATUS,RP0    ;Entramos al banco 1
-0012   30F0           00068                 MOVLW B'11110000'  ;cargamos el literal como numero binario
-0013   0086           00069                 MOVWF TRISB        ;y lo movemos al trisb configurando el bit 0,1,2,3 como salida
-0014   1283           00070                 BCF STATUS,RP0     ;volvemos al banco 0 
-0015   3000           00071                 MOVLW B'00000000'
-0016   0086           00072                 MOVWF PORTB         ;cargamos el portb
-                      00073         
-0017   0008           00074                 RETURN
-                      00075 ;********************************************************************
-0018                  00076 CALIENTOELAGUA             ;Aca trabajaremos con el calentamiento del agua
-                      00077 
-0018   2???           00078         CALL LED_AZUL      ;LLamamos a la luz led de resistencia apagada
-0019   0822           00079                 MOVF TEMPACT,W
-001A   0220           00080                 SUBWF TEMPMAX,W
-001B   1C03           00081                 BTFSS STATUS,C    ;verfico si la tempact>tempmax 
-001C   2???           00082                 CALL INCREMENTAR_TEMP ;en caso de ser tempact<tempmax llamo a la subrutina
-                      00083                 
-001D   2???           00084                 CALL LED_ROJO           
-                      00085 
-001E   0008           00086                 RETURN
-                      00087 
-001F                  00088 INCREMENTAR_TEMP
-                      00089 
-001F   2???           00090         CALL LED_AMARILLO
-                      00091 
-0020   0AA2           00092                 INCF TEMPACT,F     ;Incrementa en 1 la temperatura actual
-                      00093 
-0021   0822           00094                 MOVF TEMPACT,W      ; movemos el valos de temperatura actual al registro w
-0022   0220           00095                 SUBWF TEMPMAX,W   ; para luego restarlo "tempmax - w(tempact)"
+0001   301E           00045                 MOVLW D'30'
+0002   00A1           00046                 MOVWF TEMPMIN  ;le damos el valor a la temperatura minima con los mov
+0003   3046           00047                 MOVLW D'70'
+0004   00A0           00048                 MOVWF TEMPMAX  ;le damos el valor a la temperatura maxima con los mov
+0005   3014           00049                 MOVLW D'20'
+0006   00A2           00050                 MOVWF TEMPACT  ;le damos el valor a la temperatura actual con los mov
+0007   09A3           00051         COMF CANILLA,F   ;podemos con CLRF dejamos la canilla en 0, es decir "cerrada"
+                      00052         ;podemos cambiar el "CLRF" POR "COMF" para abrir la canilla Y QUE VAYA VARIANDO
+0008   0103           00053                 CLRW    ;Dejo en 0 el registro w ( por las dudas ) 
+                      00054 
+0009   2???           00055                 CALL CALIENTOELAGUA  ;LLAMO a la subrutina para empezar el procedimiento de calentar agu
+                            a 
+                      00056                 
+000A   2???           00057                 CALL RETARDO_DE1S     ;llamo a 4 retardos de 1seg, para generar
+000B   2???           00058                 CALL RETARDO_DE1S     ;un retanro de 4 segundo entre los calls
+000C   2???           00059                 CALL RETARDO_DE1S
+000D   2???           00060                 CALL RETARDO_DE1S
+000E   2???           00061                 CALL RETARDO_DE1S
+                      00062                 
+                      00063                 ;¡¡¡COMENTARIOIMPORTANTE !!!
+                      00064         ;SI LA TEMPERATURA ACTUAL>TEMPERATURA MAXIMA la luz roja se prendera sin hacer la subrutina
+                      00065                 ;de CALIENTOELAGUA y pasara a disminuirse
+                      00066                 
+000F   2???           00067                 CALL DISMINUIR_TEMP   ; Empezamos el proceso de decrecimiento hasta la temperatura minim
+                            a
+                      00068 
+0010   2???           00069                 GOTO INICIO
+                      00070 
+                      00071 ;********************************************************************
+0011                  00072 CONFIGURAR_PUERTOS         ;Aca configuraremos con el trisb el portb
+                      00073 
+0011   1683           00074                 BSF STATUS,RP0    ;Entramos al banco 1
+0012   30F0           00075                 MOVLW B'11110000'  ;cargamos el literal como numero binario
+0013   0086           00076                 MOVWF TRISB        ;y lo movemos al trisb configurando el bit 0,1,2,3 como salida
+0014   1283           00077                 BCF STATUS,RP0     ;volvemos al banco 0 
+0015   3000           00078                 MOVLW B'00000000'
+0016   0086           00079                 MOVWF PORTB         ;cargamos el portb
+                      00080         
+0017   0008           00081                 RETURN
+                      00082 ;********************************************************************
+0018                  00083 CALIENTOELAGUA             ;Aca trabajaremos con el calentamiento del agua
+                      00084 
+0018   2???           00085         CALL LED_AZUL      ;LLamamos a la luz led de resistencia apagada
+0019   0822           00086                 MOVF TEMPACT,W
+001A   0220           00087                 SUBWF TEMPMAX,W
+001B   1803           00088                 BTFSC STATUS,C    ;verfico si la tempact>tempmax 
+001C   2???           00089                 CALL INCREMENTAR_TEMP ;en caso de ser tempact<tempmax llamo a la subrutina
+                      00090                 
+001D   2???           00091                 CALL LED_ROJO           
+                      00092 
+001E   0008           00093                 RETURN
+                      00094 
+001F                  00095 INCREMENTAR_TEMP
+MPASM  5.50                     PROYECTO1.ASM   11-4-2022  16:49:19         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
                       00096 
-0023   1D03           00097                 BTFSS STATUS,Z        ;verifico si la temperatura actual llego a la maxima 
-MPASM  5.50                     PROYECTO1.ASM   11-3-2022  22:19:30         PAGE  3
-
-
-LOC  OBJECT CODE     LINE SOURCE TEXT
-  VALUE
-
-0024   2???           00098                 GOTO INCREMENTAR_TEMP   ;sino volvemos a hacer el procedimiento
-                      00099 
-0025   0008           00100                 RETURN
-                      00101 
-                      00102 ;********************************************************************
+001F   2???           00097         CALL LED_AMARILLO
+                      00098 
+0020   0AA2           00099                 INCF TEMPACT,F     ;Incrementa en 1 la temperatura actual
+                      00100 
+0021   0822           00101                 MOVF TEMPACT,W      ; movemos el valos de temperatura actual al registro w
+0022   0220           00102                 SUBWF TEMPMAX,W   ; para luego restarlo "tempmax - w(tempact)"
                       00103 
-0026                  00104 DISMINUIR_TEMP          ;Aca trabajaremos con el enfriamiento del agua
-                      00105 
-0026   0821           00106            MOVF TEMPMIN,W   ; nos fijamos que tempact>tempmin 
-0027   0222           00107            SUBWF TEMPACT,W ;con la resta TEMPACT-TEMPMIN
-0028   1C03           00108            BTFSS STATUS,C  ;verificamos que tempact>tempmin
-0029   2???           00109            CALL DISMINUIR_TEMP1 ;sino llamamos a esta subrutina 
+0023   1D03           00104                 BTFSS STATUS,Z        ;verifico si la temperatura actual llego a la maxima 
+0024   2???           00105                 GOTO INCREMENTAR_TEMP   ;sino volvemos a hacer el procedimiento para seguir incrementand
+                            o
+                      00106 
+0025   0008           00107                 RETURN
+                      00108 
+                      00109 ;********************************************************************
                       00110 
-002A   2???           00111            CALL LED_VERDE       
+0026                  00111 DISMINUIR_TEMP          ;Aca trabajaremos con el enfriamiento del agua
                       00112 
-002B   0008           00113            RETURN
-                      00114 
-                      00115 
-002C                  00116 DISMINUIR_TEMP1
+0026   0821           00113            MOVF TEMPMIN,W   ; nos fijamos que tempact>tempmin 
+0027   0222           00114            SUBWF TEMPACT,W ;con la resta TEMPACT-TEMPMIN
+0028   1803           00115            BTFSC STATUS,C  ;verificamos que tempact>tempmin
+0029   2???           00116            CALL DISMINUIR_TEMP1 ;sino llamamos a esta subrutina 
                       00117 
-002C   03A2           00118        DECF TEMPACT,F     
+002A   2???           00118            CALL LED_VERDE       
                       00119 
-002D   1823           00120            BTFSC CANILLA,0
-002E   2???           00121            CALL DISMINUIR_POR_CARNILLA
+002B   0008           00120            RETURN
+                      00121 
                       00122 
-002F   0822           00123            MOVF TEMPACT,W     
-0030   0221           00124            SUBWF TEMPMIN,W    ; restamos la tempact con la tempmin
-0031   1D03           00125            BTFSS STATUS,Z
-0032   2???           00126            GOTO DISMINUIR_TEMP1  ;Sino llego a la temperatura minima, que siga          
-                      00127 
-0033   0008           00128            RETURN
+002C                  00123 DISMINUIR_TEMP1
+                      00124 
+002C   03A2           00125        DECF TEMPACT,F     
+                      00126 
+002D   1823           00127            BTFSC CANILLA,0     ;Si la canilla esta abierta llamara a
+002E   2???           00128            CALL DISMINUIR_POR_CARNILLA  ; esta funcion, sino la saltara
                       00129 
-0034                  00130 DISMINUIR_POR_CARNILLA
-                      00131 
-0034   3004           00132            MOVLW D'4'
-0035   02A2           00133            SUBWF TEMPACT,F
+002F   0822           00130            MOVF TEMPACT,W     ;movemos al w, la tempact
+0030   0221           00131            SUBWF TEMPMIN,W    ; restamos la tempact con la tempmin
+0031   1D03           00132            BTFSS STATUS,Z
+0032   2???           00133            GOTO DISMINUIR_TEMP1  ;Sino llego a la temperatura minima, que siga          
                       00134 
-0036   0008           00135            RETURN
+0033   0008           00135            RETURN
                       00136 
-                      00137 ;********************************************************************
-                      00138 ;                              LEDS                                 *
-                      00139 ;********************************************************************
-                      00140 
-0037                  00141 LED_AZUL                 ;Luz de resistencia apaada
-                      00142 
-0037   1283           00143                 BCF STATUS,RP0
-0038   1406           00144                 BSF PORTB,0              ;seteamos en 1 el bit, prendiendo el mismo
-0039   2???           00145         CALL RETARDO_DE250MS
-003A   1006           00146                 BCF PORTB,0
+0034                  00137 DISMINUIR_POR_CARNILLA
+                      00138 
+0034   3004           00139            MOVLW D'4'
+0035   02A2           00140            SUBWF TEMPACT,F
+                      00141 
+0036   0008           00142            RETURN
+                      00143 
+                      00144 ;********************************************************************
+                      00145 ;                              LEDS                                 *
+                      00146 ;********************************************************************
                       00147 
-003B   0008           00148                 RETURN
+MPASM  5.50                     PROYECTO1.ASM   11-4-2022  16:49:19         PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0037                  00148 LED_AZUL                 ;Luz de resistencia apaada
                       00149 
-003C                  00150 LED_AMARILLO            ;Luz led del proceso del calentamiento del agua
-MPASM  5.50                     PROYECTO1.ASM   11-3-2022  22:19:30         PAGE  4
+0037   1283           00150                 BCF STATUS,RP0
+0038   1406           00151                 BSF PORTB,0              ;seteamos en 1 el bit, prendiendo el mismo
+0039   2???           00152         CALL RETARDO_DE250MS
+003A   2???           00153                 CALL RETARDO_DE250MS
+003B   2???           00154                 CALL RETARDO_DE250MS
+003C   1006           00155                 BCF PORTB,0
+                      00156 
+003D   0008           00157                 RETURN
+                      00158 
+003E                  00159 LED_AMARILLO            ;Luz led del proceso del calentamiento del agua
+                      00160 
+003E   1283           00161                 BCF STATUS,RP0
+003F   1486           00162                 BSF PORTB,1              ;seteamos en 1 el bit, prendiendo el mismo
+0040   2???           00163         CALL RETARDO_DE250MS
+0041   2???           00164                 CALL RETARDO_DE250MS
+                      00165                 
+0042   1086           00166                 BCF PORTB,1
+                      00167 
+0043   0008           00168                 RETURN
+                      00169 
+0044                  00170 LED_ROJO            ;Luz led que indica que el agua llego a la maxima
+                      00171 
+0044   1283           00172                 BCF STATUS,RP0
+0045   1506           00173                 BSF PORTB,2               ;seteamos en 1 el bit, prendiendo el mismo
+0046   2???           00174         CALL RETARDO_DE1S       ;retardo
+0047   1106           00175                 BCF PORTB,2
+                      00176 
+0048   0008           00177                 RETURN
+                      00178 
+0049                  00179 LED_VERDE
+                      00180 
+0049   1283           00181                 BCF STATUS,RP0
+004A   1586           00182                 BSF PORTB,3               ;seteamos en 1 el bit, prendiendo el mismo
+004B   2???           00183         CALL RETARDO_DE250MS       ;retardo
+004C   2???           00184                 CALL RETARDO_DE250MS 
+004D   2???           00185                 CALL RETARDO_DE250MS 
+004E   1186           00186                 BCF PORTB,3
+                      00187 
+004F   0008           00188                 RETURN
+                      00189 
+                      00190 ;********************************************************************
+                      00191 ;                           RETARDOS                                *
+                      00192 ;********************************************************************
+                      00193 
+0050                  00194 RETARDO_DE1MS                  ;RETARDO PARA 1 MILISEGUNDO YA QUE 256 ES EL MAXIMO DEL PIC
+                      00195 
+0050   30FA           00196                 MOVLW D'250'            ;cargamos el registro de trabajo
+0051   00A4           00197                 MOVWF ACUMULADOR1       ; para luego moverlo al ACUMULADOR1
+0052                  00198 RETARDOAUX1 
+0052   0000           00199         NOP
+0053   0BA4           00200         DECFSZ ACUMULADOR1,F    ;con esta instruccion decremento el ACUMULADOR1 hacemos esto hasta que 
+MPASM  5.50                     PROYECTO1.ASM   11-4-2022  16:49:19         PAGE  5
 
 
 LOC  OBJECT CODE     LINE SOURCE TEXT
   VALUE
 
-                      00151 
-003C   1283           00152                 BCF STATUS,RP0
-003D   1486           00153                 BSF PORTB,1              ;seteamos en 1 el bit, prendiendo el mismo
-003E   2???           00154         CALL RETARDO_DE250MS
-                      00155                 
-003F   1086           00156                 BCF PORTB,1
-                      00157 
-0040   0008           00158                 RETURN
-                      00159 
-0041                  00160 LED_ROJO            ;Luz led que indica que el agua llego a la maxima
-                      00161 
-0041   1283           00162                 BCF STATUS,RP0
-0042   1506           00163                 BSF PORTB,2               ;seteamos en 1 el bit, prendiendo el mismo
-0043   2???           00164         CALL RETARDO_DE250MS       ;retardo
-0044   1106           00165                 BCF PORTB,2
-                      00166 
-0045   0008           00167                 RETURN
-                      00168 
-0046                  00169 LED_VERDE
-                      00170 
-0046   1283           00171                 BCF STATUS,RP0
-0047   1586           00172                 BSF PORTB,3               ;seteamos en 1 el bit, prendiendo el mismo
-0048   2???           00173         CALL RETARDO_DE250MS       ;retardo
-0049   1186           00174                 BCF PORTB,3
-                      00175 
-004A   0008           00176                 RETURN
-                      00177 
-                      00178 ;********************************************************************
-                      00179 ;                           RETARDOS                                *
-                      00180 ;********************************************************************
-                      00181 
-004B                  00182 RETARDO_DE1MS                  ;RETARDO PARA 1 MILISEGUNDO YA QUE 256 ES EL MAXIMO DEL PIC
-                      00183 
-004B   30FA           00184                 MOVLW D'250'            ;cargamos el registro de trabajo
-004C   00A4           00185                 MOVWF ACUMULADOR1       ; para luego moverlo al ACUMULADOR1
-004D                  00186 RETARDOAUX1 
-004D   0000           00187         NOP
-004E   0BA4           00188         DECFSZ ACUMULADOR1,F    ;con esta instruccion decremento el ACUMULADOR1 hacemos esto hasta que 
-004F   2???           00189         GOTO RETARDOAUX1        ;se haya decrementado a 0, lo que significa 1ms de retardo
-0050   0008           00190         RETURN
-                      00191 
-                      00192 
-0051                  00193 RETARDO_DE250MS                 ;con esta subrutina generaremos 250 ms
-0051   30FA           00194          MOVLW D'250'            ;Cantidad de veces que voy a llamar a la subrutina "RETARDOS_DE1MS"
-0052   00A5           00195          MOVWF ACUMULADOR2
-                      00196 
-0053                  00197 RETARDOAUX2   
-0053   2???           00198          CALL   RETARDO_DE1MS        ;llamamos al retardo de 1ms para por cada vuelta a RETARDOAUX2
-0054   0BA5           00199          DECFSZ    ACUMULADOR2,F     ;vayamos decrementando en uno los 250 del ACUMULADOR1
-0055   2???           00200          GOTO RETARDOAUX2            ;Lo repito hasta ACUMULADOR2 que quede en 0. Lo cual seria,250ms de
-                             retardo
-0056   0008           00201          RETURN
-                      00202 
-MPASM  5.50                     PROYECTO1.ASM   11-3-2022  22:19:30         PAGE  5
-
-
-LOC  OBJECT CODE     LINE SOURCE TEXT
-  VALUE
-
+0054   2???           00201         GOTO RETARDOAUX1        ;se haya decrementado a 0, lo que significa 1ms de retardo
+0055   0008           00202         RETURN
                       00203 
-0057                  00204 RETARDO_DE1S                    ;con esta subrutina generaremos 1000 ms osea 1 seg
-0057   3004           00205          MOVLW     D'4'         ;Cantidad de veces que voy a llamar a la subrutina "RETARDO_DE250MS"
-0058   00A6           00206          MOVWF     ACUMULADOR3
-                      00207 
-0059                  00208 RETARDOAUX3      
-0059   2???           00209              CALL  RETARDO_DE250MS     ;Al llamarlo 4 veces vamos a generar 1seg
-005A   0BA6           00210          DECFSZ     ACUMULADOR3,F  ;decrementamos hasta que
-005B   2???           00211          GOTO   RETARDOAUX3        ;ACUMULADOR3 quede en 0
-005C   0008           00212          RETURN
-                      00213 
+                      00204 
+0056                  00205 RETARDO_DE250MS                 ;con esta subrutina generaremos 250 ms
+0056   30FA           00206          MOVLW D'250'            ;Cantidad de veces que voy a llamar a la subrutina "RETARDOS_DE1MS"
+0057   00A5           00207          MOVWF ACUMULADOR2
+                      00208 
+0058                  00209 RETARDOAUX2   
+0058   2???           00210          CALL   RETARDO_DE1MS        ;llamamos al retardo de 1ms para por cada vuelta a RETARDOAUX2
+0059   0BA5           00211          DECFSZ    ACUMULADOR2,F     ;vayamos decrementando en uno los 250 del ACUMULADOR1
+005A   2???           00212          GOTO RETARDOAUX2            ;Lo repito hasta ACUMULADOR2 que quede en 0. Lo cual seria,250ms de
+                             retardo
+005B   0008           00213          RETURN
                       00214 
                       00215 
-                      00216 ;********************************************************************
-3F10                  00217                 END
-MPASM  5.50                     PROYECTO1.ASM   11-3-2022  22:19:30         PAGE  6
+005C                  00216 RETARDO_DE1S                    ;con esta subrutina generaremos 1000 ms osea 1 seg
+005C   3004           00217          MOVLW     D'4'         ;Cantidad de veces que voy a llamar a la subrutina "RETARDO_DE250MS"
+005D   00A6           00218          MOVWF     ACUMULADOR3
+                      00219 
+005E                  00220 RETARDOAUX3      
+005E   2???           00221              CALL  RETARDO_DE250MS     ;Al llamarlo 4 veces vamos a generar 1seg
+005F   0BA6           00222          DECFSZ     ACUMULADOR3,F  ;decrementamos hasta que
+0060   2???           00223          GOTO   RETARDOAUX3        ;ACUMULADOR3 quede en 0
+0061   0008           00224          RETURN
+                      00225 
+                      00226 
+                      00227 
+                      00228 ;********************************************************************
+3F10                  00229                 END
+MPASM  5.50                     PROYECTO1.ASM   11-4-2022  16:49:19         PAGE  6
 
 
 SYMBOL TABLE
@@ -314,7 +329,7 @@ FERR                              00000002
 FSR                               00000004
 GIE                               00000007
 INCREMENTAR_TEMP                  0000001F
-MPASM  5.50                     PROYECTO1.ASM   11-3-2022  22:19:30         PAGE  7
+MPASM  5.50                     PROYECTO1.ASM   11-4-2022  16:49:19         PAGE  7
 
 
 SYMBOL TABLE
@@ -327,10 +342,10 @@ INTE                              00000004
 INTEDG                            00000006
 INTF                              00000001
 IRP                               00000007
-LED_AMARILLO                      0000003C
+LED_AMARILLO                      0000003E
 LED_AZUL                          00000037
-LED_ROJO                          00000041
-LED_VERDE                         00000046
+LED_ROJO                          00000044
+LED_VERDE                         00000049
 NOT_BO                            00000000
 NOT_BOD                           00000000
 NOT_BOR                           00000000
@@ -373,7 +388,7 @@ RB6                               00000006
 RB7                               00000007
 RBIE                              00000003
 RBIF                              00000000
-MPASM  5.50                     PROYECTO1.ASM   11-3-2022  22:19:30         PAGE  8
+MPASM  5.50                     PROYECTO1.ASM   11-4-2022  16:49:19         PAGE  8
 
 
 SYMBOL TABLE
@@ -384,12 +399,12 @@ RCIF                              00000005
 RCREG                             0000001A
 RCSTA                             00000018
 RD                                00000000
-RETARDOAUX1                       0000004D
-RETARDOAUX2                       00000053
-RETARDOAUX3                       00000059
-RETARDO_DE1MS                     0000004B
-RETARDO_DE1S                      00000057
-RETARDO_DE250MS                   00000051
+RETARDOAUX1                       00000052
+RETARDOAUX2                       00000058
+RETARDOAUX3                       0000005E
+RETARDO_DE1MS                     00000050
+RETARDO_DE1S                      0000005C
+RETARDO_DE250MS                   00000056
 RP0                               00000005
 RP1                               00000006
 RX9                               00000006
@@ -432,7 +447,7 @@ TOUTPS1                           00000004
 TOUTPS2                           00000005
 TOUTPS3                           00000006
 TRISA                             00000085
-MPASM  5.50                     PROYECTO1.ASM   11-3-2022  22:19:30         PAGE  9
+MPASM  5.50                     PROYECTO1.ASM   11-4-2022  16:49:19         PAGE  9
 
 
 SYMBOL TABLE
@@ -491,7 +506,7 @@ _ER_OSC_NOCLKOUT                  00003FFE
 _EXTCLK_OSC                       00003FEF
 _FOSC_ECIO                        00003FEF
 _FOSC_EXTRCCLK                    00003FFF
-MPASM  5.50                     PROYECTO1.ASM   11-3-2022  22:19:30         PAGE 10
+MPASM  5.50                     PROYECTO1.ASM   11-4-2022  16:49:19         PAGE 10
 
 
 SYMBOL TABLE
